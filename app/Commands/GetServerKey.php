@@ -2,44 +2,20 @@
 
 namespace App\Commands;
 
-use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Http;
 use LaravelZero\Framework\Commands\Command;
 
 class GetServerKey extends Command
 {
-    /**
-     * The signature of the command.
-     *
-     * @var string
-     */
-    protected $signature = 'inspiring {name=Artisan}';
+    protected $signature = 'get-server-key';
+    protected $description = 'Get Server Key from Meveto Backend App Example: php [meveto-cli] get-server-key';
 
-    /**
-     * The description of the command.
-     *
-     * @var string
-     */
-    protected $description = 'Display an inspiring quote';
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
+        $response =  Http::get(env('MEVETO_BACKEND_URL') . '/encryption/getServerKey');
 
-        $this->info('Simplicity is the ultimate sophistication.');
-    }
+        $response = json_decode($response->getBody(), true)['data']['public_key'];
 
-    /**
-     * Define the command's schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule)
-    {
-        // $schedule->command(static::class)->everyMinute();
+        $this->info($response);
     }
 }
