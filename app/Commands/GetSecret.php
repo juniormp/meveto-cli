@@ -25,9 +25,13 @@ class GetSecret extends Command
         $response =  Http::withHeaders($header)
             ->get(env('MEVETO_BACKEND_URL') . '/encryption/getSecret', $data);
 
-        $response = json_decode($response->getBody(), true)['data']['encrypted_secret'];
-
-        $this->info($this->decryptWithServerPublicKey($response));
+        if (json_decode($response->getBody(), true)['success'] !== false){
+            $response = json_decode($response->getBody(), true)['data']['encrypted_secret'];
+            $this->info($this->decryptWithServerPublicKey($response));
+        } else {
+            $response = $response->getBody();
+            $this->info($response);
+        }
     }
 
     private function decryptWithServerPublicKey(string $secret): string
